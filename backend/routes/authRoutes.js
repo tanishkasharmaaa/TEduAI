@@ -12,7 +12,7 @@ router.get("/google/callback", passport.authenticate("google", {
 }), (req, res) => {
   const token = generateToken(req.user);
   // Send JWT token in a redirect or cookie or response
-  res.redirect(`http://localhost:3000/oauth-success?token=${token}`);
+  res.redirect(`http://localhost:5174?token=${token}`);
 });
 
 
