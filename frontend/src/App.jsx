@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar'; // adjust path as needed
-import { useAuth } from './context/AuthContext'; // if using auth context
+import Navbar from './components/Navbar'; 
+import { useAuth } from './context/AuthContext'; 
 
 // All your pages
 import Home from './pages/Home';
@@ -10,7 +10,11 @@ import AddCourse from './pages/AddCourse';
 import AdminPanel from './pages/AdminPanel';
 import StudentProgress from './pages/StudentProgress';
 import AIDoubtChat from './pages/AIDoubtChat';
-import ProtectedRoute from './components/ProtectedRoute'; // your auth wrapper
+import ProtectedRoute from './components/ProtectedRoute'; 
+import Dashboard from './pages/Dashboard'
+import Courses from './pages/Courses'
+import CourseDetails from './pages/CourseDetails';
+import DoubtSolver from './components/DoubtSolver';
 
 
 
@@ -70,14 +74,6 @@ const App = () => {
   element={
     <ProtectedRoute allowedRoles={['student']}>
       <DoubtSolver />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/ask-ai"
-  element={
-    <ProtectedRoute allowedRoles={['student']}>
-      <AIDoubtChat />
     </ProtectedRoute>
   }
 />
