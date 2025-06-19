@@ -13,7 +13,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://t-edu-ai.vercel.app'],
+  origin:'https://t-edu-ai.vercel.app',
   credentials: true
 }));
 
