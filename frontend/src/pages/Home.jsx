@@ -6,7 +6,6 @@ import Navbar from '../components/Navbar'
 const Home = () => {
   return (
     <>
-    <Navbar/>
     <Box textAlign="center" p={10}>
       <Stack spacing={6}>
         <Heading fontSize={{ base: '2xl', md: '4xl' }}>
