@@ -21,16 +21,34 @@ import {
   VStack,
   Show,
   Hide,
+  Spinner
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useColorMode } from '@chakra-ui/react';
 import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { useAuth } from '../context/AuthContext';
+import { useEffect, useState } from 'react';
 
 const Navbar = () => {
   const { toggleColorMode, colorMode } = useColorMode();
   const { user, logout } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
+
+  // Optional: Ensure Navbar waits for context to load
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    // Simulate hydration delay if needed
+    setTimeout(() => {
+      setAuthReady(true);
+    }, 100); // delay to allow context to update
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const NavButtons = () => (
     <>
@@ -72,8 +90,8 @@ const Navbar = () => {
             <Avatar size="sm" name={user?.name} />
           </MenuButton>
           <MenuList>
-            <MenuItem>{user?.role.toUpperCase()}</MenuItem>
-            <MenuItem onClick={logout}>Logout</MenuItem>
+            <MenuItem disabled>{user?.role?.toUpperCase()}</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </MenuList>
         </Menu>
       )}
@@ -99,7 +117,7 @@ const Navbar = () => {
               color="white"
               _hover={{ bg: useColorModeValue('blue.400', 'blue.600') }}
             />
-            <NavButtons />
+            {authReady ? <NavButtons /> : <Spinner size="sm" color="white" />}
           </HStack>
         </Hide>
 
@@ -129,7 +147,7 @@ const Navbar = () => {
                 aria-label="Toggle Theme"
                 alignSelf="flex-end"
               />
-              <NavButtons />
+              {authReady ? <NavButtons /> : <Spinner />}
             </VStack>
           </DrawerBody>
         </DrawerContent>
