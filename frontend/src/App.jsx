@@ -1,19 +1,17 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar'; // adjust path as needed
+import { useAuth } from './context/AuthContext'; // if using auth context
+
+// All your pages
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Navbar from './components/Navbar';
-import { useAuth } from './context/AuthContext';
-import Courses from './pages/Courses';
-import CourseDetails from './pages/CourseDetails';
-import AddCourse from './pages/AddCourse';
-import ProtectedRoute from './components/ProtectedRoute';
-import AdminPanel from './pages/AdminPanel';
 import TeacherDashboard from './pages/TeacherDashboard';
+import AddCourse from './pages/AddCourse';
+import AdminPanel from './pages/AdminPanel';
 import StudentProgress from './pages/StudentProgress';
-import DoubtSolver from './components/DoubtSolver';
 import AIDoubtChat from './pages/AIDoubtChat';
+import ProtectedRoute from './components/ProtectedRoute'; // your auth wrapper
+
 
 
 const App = () => {
