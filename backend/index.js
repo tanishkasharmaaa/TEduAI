@@ -5,7 +5,6 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const passport = require("passport")
 const session = require("express-session");
-const cors = require("cors");
 require('./config/passport')
 
 dotenv.config()
