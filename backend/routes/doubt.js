@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middlewares/auth');
+const authMiddleware = require('../middleware/authMiddleware');
 const { getAIDoubtSolution } = require('../utils/openai');
 const StudentChat = require('../models/StudentChat');
 
