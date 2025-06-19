@@ -5,6 +5,16 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Navbar from './components/Navbar';
 import { useAuth } from './context/AuthContext';
+import Courses from './pages/Courses';
+import CourseDetails from './pages/CourseDetails';
+import AddCourse from './pages/AddCourse';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminPanel from './pages/AdminPanel';
+import TeacherDashboard from './pages/TeacherDashboard';
+import StudentProgress from './pages/StudentProgress';
+import DoubtSolver from './components/DoubtSolver';
+import AIDoubtChat from './pages/AIDoubtChat';
+
 
 const App = () => {
   const { user, logout } = useAuth();
@@ -15,7 +25,64 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/courses/:id" element={<CourseDetails />} />
+        <Route
+          path="/teacher/add"
+          element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <AddCourse />
+            </ProtectedRoute>
+          }
+        />
+       <Route
+  path="/admin"
+  element={
+    <ProtectedRoute allowedRoles={['admin']}>
+      <AdminPanel />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/teacher/dashboard"
+  element={
+    <ProtectedRoute allowedRoles={['teacher']}>
+      <TeacherDashboard />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/student/progress"
+  element={
+    <ProtectedRoute allowedRoles={['student']}>
+      <StudentProgress />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/ask-ai"
+  element={
+    <ProtectedRoute allowedRoles={['student']}>
+      <DoubtSolver />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/ask-ai"
+  element={
+    <ProtectedRoute allowedRoles={['student']}>
+      <AIDoubtChat />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </>
   );
