@@ -34,6 +34,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/courses', require('./routes/courseRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use("/api/dev",require("./routes/dev"))
+app.use('/api/doubt',require('./routes/doubt'))
 
 
 
