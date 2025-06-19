@@ -18,35 +18,59 @@ const Login = () => {
   const location = useLocation();
 
   // Handle Google OAuth callback
-  useEffect(() => {
-    const token = new URLSearchParams(location.search).get('token');
+ useEffect(() => {
+  const token = new URLSearchParams(location.search).get('token');
 
-    if (token) {
-      axios.get('https://teduai.onrender.com/api/auth/user', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => {
-        login(res.data, token); // update context and localStorage
-        toast({
-          title: 'Login Successful',
-          status: 'success',
-          duration: 3000,
-          position: 'top',
-          isClosable: true,
-        });
-        navigate('/dashboard', { replace: true }); // force rerender
-      })
-      .catch(() => {
-        toast({
-          title: 'Login Failed',
-          status: 'error',
-          duration: 3000,
-          position: 'top',
-          isClosable: true,
-        });
-      });
+  if (!token) {
+    toast({
+      title: 'Token missing from URL',
+      status: 'error',
+      duration: 3000,
+      position: 'top',
+      isClosable: true,
+    });
+    return;
+  }
+
+  // Optional: Log to debug
+  console.log('Received token from URL:', token);
+
+  axios.get('https://teduai.onrender.com/api/auth/user', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .then(res => {
+    const user = res?.data;
+    if (!user) {
+      throw new Error('No user returned from backend');
     }
-  }, [location.search, login, navigate, toast]);
+
+    login(user, token); // ✅ Save token & user
+    toast({
+      title: 'Login Successful',
+      status: 'success',
+      duration: 3000,
+      position: 'top',
+      isClosable: true,
+    });
+
+    // Navigate after slight delay to ensure context update
+    setTimeout(() => {
+      navigate('/dashboard', { replace: true });
+    }, 100);
+  })
+  .catch(err => {
+    console.error('Login failed:', err?.response || err?.message || err);
+    toast({
+      title: 'Login Failed',
+      description: 'Unable to fetch user. Try again.',
+      status: 'error',
+      duration: 3000,
+      position: 'top',
+      isClosable: true,
+    });
+  });
+}, [location.search, login, navigate, toast]);
+
 
   const handleGoogleLogin = () => {
     window.location.href = 'https://teduai.onrender.com/api/auth/google';
