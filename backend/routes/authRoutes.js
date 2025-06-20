@@ -13,7 +13,7 @@ router.get("/google/callback",
   }),
   (req, res) => {
     const token = generateToken(req.user); 
-    console.log(token)
+    res.send(token)
     res.redirect(`http://localhost:5173`);
   }
 );
