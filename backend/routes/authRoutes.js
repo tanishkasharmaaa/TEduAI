@@ -14,7 +14,7 @@ router.get("/google/callback",
   (req, res) => {
     const token = generateToken(req.user); 
     console.log(token)
-    res.redirect(`https://t-edu-ai.vercel.app`);
+    res.redirect(`http://localhost:5173`);
   }
 );
 
