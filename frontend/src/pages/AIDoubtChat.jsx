@@ -5,6 +5,9 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
+// 🔧 Use environment variable for API URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://teduai.onrender.com';
+
 const AIDoubtChat = () => {
   const { token, user } = useAuth();
   const toast = useToast();
@@ -22,7 +25,7 @@ const AIDoubtChat = () => {
   }, [chat]);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !token) return;
 
     const newMessage = { sender: 'user', text: input };
     setChat((prev) => [...prev, newMessage]);
@@ -31,26 +34,42 @@ const AIDoubtChat = () => {
 
     try {
       const res = await axios.post(
-        'https://teduai.onrender.com/api/doubt/solve',
+        `${API_BASE_URL}/api/doubt/solve`,
         { question: input },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setChat(prev => [...prev, { sender: 'ai', text: res.data.answer }]);
     } catch (err) {
-      toast({ title: 'AI error', description: 'Try again later', status: 'error' });
+      console.error("AI Error:", err?.response?.data || err.message);
+      toast({
+        title: 'AI error',
+        description: err?.response?.data?.error || 'Something went wrong. Try again later.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const fetchHistory = async () => {
+    if (!token) return;
+
     try {
-      const res = await axios.get('https://teduai.onrender.com/api/doubt/history', {
+      const res = await axios.get(`${API_BASE_URL}/api/doubt/history`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setChat(res.data);
-    } catch {
-      toast({ title: 'Failed to load history', status: 'warning' });
+      setChat(res.data || []);
+    } catch (err) {
+      console.error("History Error:", err?.response?.data || err.message);
+      toast({
+        title: 'Failed to load history',
+        description: err?.response?.data?.error || 'Try refreshing the page.',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -58,15 +77,28 @@ const AIDoubtChat = () => {
     if (user?.role === 'student') {
       fetchHistory();
     }
-  }, []);
+  }, [user?.role]);
 
   const handleClear = () => {
     setChat([]);
-    toast({ title: 'Chat cleared (local)', status: 'info', duration: 2000 });
+    toast({
+      title: 'Chat cleared (local)',
+      status: 'info',
+      duration: 2000,
+      isClosable: true,
+    });
+    scrollToBottom();
   };
 
+  // 🔐 Role-based access check
   if (!user || user.role !== 'student') {
-    return <Box p={6}><Text>Only students can access this page.</Text></Box>;
+    return (
+      <Box p={6}>
+        <Text fontSize="lg" fontWeight="semibold" color="red.500">
+          Only students can access this page.
+        </Text>
+      </Box>
+    );
   }
 
   return (
@@ -86,7 +118,7 @@ const AIDoubtChat = () => {
           ))}
           {loading && (
             <Box bg="gray.100" px={4} py={2} borderRadius="lg" alignSelf="flex-start">
-              <Spinner size="sm" /> <Text ml={2} display="inline">AI is thinking...</Text>
+              <Spinner size="sm" mr={2} /> <Text display="inline">AI is thinking...</Text>
             </Box>
           )}
           <div ref={chatEndRef} />
@@ -98,7 +130,7 @@ const AIDoubtChat = () => {
           placeholder="Ask your doubt..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
         />
         <Button onClick={handleSend} colorScheme="teal" isDisabled={loading || !input}>
           Send
