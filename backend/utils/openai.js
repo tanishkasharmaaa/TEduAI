@@ -1,21 +1,16 @@
-const OpenAI = require('openai');
-require("dotenv").config();
+const OpenAI = require("openai");
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 const getAIDoubtSolution = async (question) => {
-  const response = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: [
-      { role: 'system', content: 'You are a helpful educational assistant for students.' },
-      { role: 'user', content: question },
-    ],
+  const chatCompletion = await openai.chat.completions.create({
+    messages: [{ role: "user", content: question }],
+    model: "gpt-3.5-turbo",
   });
 
-  return response.choices[0].message.content;
+  return chatCompletion.choices[0].message.content.trim();
 };
 
 module.exports = { getAIDoubtSolution };
-
