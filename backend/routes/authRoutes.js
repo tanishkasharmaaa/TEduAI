@@ -2,6 +2,7 @@ const router = require('express').Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const generateToken = require("../utils/generateToken");
+const User = require('../models/User'); // Make sure the path is correct
 
 // 🔐 Middleware to protect routes
 const authenticateToken = (req, res, next) => {
@@ -15,7 +16,7 @@ const authenticateToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; // This should contain { id, email, name } ideally
     next();
   } catch (err) {
     return res.status(403).json({ message: "Forbidden: Invalid token" });
@@ -33,15 +34,23 @@ router.get("/google/callback",
   }),
   (req, res) => {
     const token = generateToken(req.user); 
-
-    // ✅ Redirect to frontend with token in URL
     res.redirect(`http://localhost:5173/login?token=${token}`);
   }
 );
 
-// ✅ GET /api/auth/user — Return logged in user's info
-router.get('/user', authenticateToken, (req, res) => {
-  res.status(200).json(req.user);
+// ✅ Get user details using token
+router.get('/user', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password'); // Omit password field
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 module.exports = router;
+
